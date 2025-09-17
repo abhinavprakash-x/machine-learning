@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Price Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#003f5c] mb-2">Analyzing Car Price Drivers</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">A data-driven infographic exploring the factors that influence the price of used cars, based on a sample dataset.</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1 md:col-span-2 bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center text-center">
+                <h2 class="text-2xl font-bold text-[#003f5c] mb-2">Average Car Price</h2>
+                <p id="avgPriceText" class="text-7xl font-bold text-[#ff6361] mb-4"></p>
+                <p class="text-gray-600 mt-4 px-4">The average price of a car in the dataset, providing a central benchmark for comparison.</p>
+            </div>
+            
+            <div class="md:col-span-2 lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-center text-[#003f5c] mb-2">Price vs. Mileage and Age</h2>
+                <p class="text-gray-600 text-center mb-6">These scatter plots visualize the core relationship between a car's price and its age and mileage. As expected, price tends to decrease as both metrics increase.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="priceVsMileageChart"></canvas>
+                    </div>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="priceVsAgeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 lg:col-span-3 bg-white rounded-2xl shadow-lg p-6">
+                 <h2 class="text-2xl font-bold text-center text-[#003f5c] mb-2">Location and Engine Size Impact</h2>
+                 <p class="text-gray-600 text-center mb-6">This bar chart shows the average price and mileage by location, while the radar chart compares car attributes based on engine size.</p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="locationComparisonChart"></canvas>
+                    </div>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="engineSizeRadarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-center text-[#003f5c] mb-2">Distribution of Car Prices</h2>
+                <p class="text-gray-600 text-center mb-6">This histogram shows the distribution of prices across the dataset, revealing the most common price ranges for cars in the sample.</p>
+                <div class="chart-container h-80 md:h-96">
+                    <canvas id="priceDistribution"></canvas>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 bg-white rounded-2xl shadow-lg p-6">
+                 <h2 class="text-2xl font-bold text-center text-[#003f5c] mb-2">Understanding Price Dynamics</h2>
+                 <p class="text-gray-600 text-center mb-8">The data reveals a clear relationship between vehicle attributes and market value. A simple model shows how key factors cascade to determine a car's final price.</p>
+                 <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="text-center p-4 bg-purple-100 border-2 border-purple-300 rounded-lg shadow">
+                        <p class="text-4xl mb-2">🚗</p>
+                        <h3 class="font-semibold text-purple-800">Age & Mileage</h3>
+                    </div>
+                    <div class="text-2xl font-bold text-[#58508d] transform md:rotate-0 rotate-90">&rarr;</div>
+                    <div class="text-center p-4 bg-blue-100 border-2 border-blue-300 rounded-lg shadow">
+                        <p class="text-4xl mb-2">⚙️</p>
+                        <h3 class="font-semibold text-blue-800">Engine Size & Condition</h3>
+                    </div>
+                    <div class="text-2xl font-bold text-[#bc5090] transform md:rotate-0 rotate-90">&rarr;</div>
+                    <div class="text-center p-4 bg-red-100 border-2 border-red-300 rounded-lg shadow">
+                        <p class="text-4xl mb-2">📍</p>
+                         <h3 class="font-semibold text-red-800">Location-based Value</h3>
+                    </div>
+                    <div class="text-2xl font-bold text-[#ff6361] transform md:rotate-0 rotate-90">&rarr;</div>
+                    <div class="text-center p-4 bg-orange-100 border-2 border-orange-300 rounded-lg shadow">
+                         <p class="text-4xl mb-2">💰</p>
+                        <h3 class="font-semibold text-orange-800">Final Price</h3>
+                    </div>
+                 </div>
+            </div>
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-300">
+            <p class="text-gray-500">Infographic generated based on the provided Car Price Dataset.</p>
+        </footer>
+    </div>
+
+    <script>
+        const csvData = `mileage,age,engine_size,location,price
+15,12,1,0,1000
+18,10,1,1,1500
+20,8,2,0,2200
+22,6,1,1,2500
+24,5,2,1,3000
+25,4,3,0,3300
+26,3,1,1,2800
+27,2,2,1,3500
+28,1,3,1,5000
+19,15,1,0,800
+21,13,2,0,1500
+23,9,1,1,2300
+25,7,2,1,3200
+29,4,3,0,4100
+30,3,2,1,4500
+31,2,3,1,5500
+32,1,2,0,4000
+18,14,1,0,1000
+20,11,2,1,2000
+22,10,1,0,1800
+24,8,3,1,4200
+26,7,2,0,2800
+28,6,1,1,3100
+29,5,2,1,3700
+30,4,3,0,4600
+31,3,2,1,4900
+32,2,3,1,6000
+33,1,2,0,4500
+34,2,3,1,6500
+35,1,3,1,7000`;
+
+        function parseCSV(data) {
+            const lines = data.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const values = line.split(',');
+                const entry = {};
+                headers.forEach((header, index) => {
+                    entry[header] = parseFloat(values[index]);
+                });
+                return entry;
+            });
+        }
+
+        const carData = parseCSV(csvData);
+        
+        const colors = {
+            main: '#003f5c',
+            purple: '#58508d',
+            pink: '#bc5090',
+            red: '#ff6361',
+            orange: '#ffa600',
+            lightGray: '#d1d5db',
+        };
+
+        const tooltipPlugin = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            }
+                            return label;
+                        }
+                    }
+                },
+                legend: {
+                    labels: {
+                        boxWidth: 15,
+                        padding: 15,
+                        font: {
+                            size: 14
+                        }
+                    }
+                }
+            }
+        };
+        
+        const chartOptions = {
+             maintainAspectRatio: false,
+             responsive: true,
+             ...tooltipPlugin
+        };
+        
+        const totalPrice = carData.reduce((sum, car) => sum + car.price, 0);
+        const avgPrice = (totalPrice / carData.length).toFixed(0);
+        document.getElementById('avgPriceText').innerText = `$${avgPrice}`;
+
+        const priceVsMileageData = carData.map(car => ({
+            x: car.mileage,
+            y: car.price
+        }));
+
+        new Chart(document.getElementById('priceVsMileageChart'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Car Price vs. Mileage',
+                    data: priceVsMileageData,
+                    backgroundColor: colors.red,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: { ...chartOptions, plugins: { legend: { display: false } }, scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: 'Mileage (K)' } }, y: { title: { display: true, text: 'Price ($)' } } } }
+        });
+        
+        const priceVsAgeData = carData.map(car => ({
+            x: car.age,
+            y: car.price
+        }));
+
+        new Chart(document.getElementById('priceVsAgeChart'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Car Price vs. Age',
+                    data: priceVsAgeData,
+                    backgroundColor: colors.main,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: { ...chartOptions, plugins: { legend: { display: false } }, scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: 'Age (Years)' } }, y: { title: { display: true, text: 'Price ($)' } } } }
+        });
+
+        const locationData = carData.reduce((acc, curr) => {
+            const loc = curr.location === 0 ? 'City' : 'Suburbs';
+            if (!acc[loc]) {
+                acc[loc] = { prices: [], mileages: [] };
+            }
+            acc[loc].prices.push(curr.price);
+            acc[loc].mileages.push(curr.mileage);
+            return acc;
+        }, {});
+
+        const avgPriceCity = locationData.City ? (locationData.City.prices.reduce((s, p) => s + p, 0) / locationData.City.prices.length).toFixed(0) : 0;
+        const avgPriceSuburbs = locationData.Suburbs ? (locationData.Suburbs.prices.reduce((s, p) => s + p, 0) / locationData.Suburbs.prices.length).toFixed(0) : 0;
+        const avgMileageCity = locationData.City ? (locationData.City.mileages.reduce((s, m) => s + m, 0) / locationData.City.mileages.length).toFixed(0) : 0;
+        const avgMileageSuburbs = locationData.Suburbs ? (locationData.Suburbs.mileages.reduce((s, m) => s + m, 0) / locationData.Suburbs.mileages.length).toFixed(0) : 0;
+
+        new Chart(document.getElementById('locationComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['City', 'Suburbs'],
+                datasets: [
+                    {
+                        label: 'Avg. Price ($)',
+                        data: [avgPriceCity, avgPriceSuburbs],
+                        backgroundColor: colors.purple,
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Avg. Mileage (K)',
+                        data: [avgMileageCity, avgMileageSuburbs],
+                        backgroundColor: colors.pink,
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: { ...chartOptions, scales: { y: { beginAtZero: true, grid: { drawOnChartArea: false }  } } }
+        });
+        
+        const engineSizeData = carData.reduce((acc, curr) => {
+            const size = curr.engine_size;
+            if (!acc[size]) {
+                acc[size] = { prices: [], ages: [], mileages: [] };
+            }
+            acc[size].prices.push(curr.price);
+            acc[size].ages.push(curr.age);
+            acc[size].mileages.push(curr.mileage);
+            return acc;
+        }, {});
+
+        const engineSizes = Object.keys(engineSizeData);
+        const engineSizeAvgData = engineSizes.reduce((acc, size) => {
+            acc[size] = {
+                price: engineSizeData[size].prices.reduce((s, p) => s + p, 0) / engineSizeData[size].prices.length,
+                age: engineSizeData[size].ages.reduce((s, a) => s + a, 0) / engineSizeData[size].ages.length,
+                mileage: engineSizeData[size].mileages.reduce((s, m) => s + m, 0) / engineSizeData[size].mileages.length
+            };
+            return acc;
+        }, {});
+
+        new Chart(document.getElementById('engineSizeRadarChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Avg. Price ($)', 'Avg. Age (Years)', 'Avg. Mileage (K)'],
+                datasets: engineSizes.map(size => ({
+                    label: `Engine Size ${size}`,
+                    data: [engineSizeAvgData[size].price, engineSizeAvgData[size].age, engineSizeAvgData[size].mileage],
+                    fill: true,
+                    backgroundColor: size == 1 ? 'rgba(255, 99, 132, 0.2)' : size == 2 ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 205, 86, 0.2)',
+                    borderColor: size == 1 ? colors.red : size == 2 ? colors.main : colors.orange,
+                    pointBackgroundColor: size == 1 ? colors.red : size == 2 ? colors.main : colors.orange,
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: size == 1 ? colors.red : size == 2 ? colors.main : colors.orange
+                }))
+            },
+            options: { ...chartOptions, elements: { line: { borderWidth: 3 } }, scales: { r: { angleLines: { display: false }, suggestedMin: 0 } } }
+        });
+        
+        function createDistributionData(data, key, binSize) {
+            const values = data.map(d => d[key]);
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const bins = {};
+            
+            for (let i = Math.floor(min / binSize) * binSize; i <= max; i += binSize) {
+                const binLabel = `$${i.toFixed(0)} - $${(i + binSize - 1).toFixed(0)}`;
+                bins[binLabel] = 0;
+            }
+
+            values.forEach(value => {
+                const binStart = Math.floor(value / binSize) * binSize;
+                const binLabel = `$${binStart.toFixed(0)} - $${(binStart + binSize - 1).toFixed(0)}`;
+                if (bins[binLabel] !== undefined) {
+                    bins[binLabel]++;
+                }
+            });
+            return {
+                labels: Object.keys(bins),
+                data: Object.values(bins)
+            };
+        }
+
+        const priceDist = createDistributionData(carData, 'price', 1000);
+        new Chart(document.getElementById('priceDistribution'), {
+            type: 'bar',
+            data: {
+                labels: priceDist.labels,
+                datasets: [{
+                    label: 'Number of Cars',
+                    data: priceDist.data,
+                    backgroundColor: colors.orange,
+                    borderRadius: 4
+                }]
+            },
+            options: { ...chartOptions, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Number of Cars' } }, x: { title: { display: true, text: 'Price Range' } } } }
+        });
+    </script>
+</body>
+</html>

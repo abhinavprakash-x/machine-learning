@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#003f5c] mb-2">Unlocking Academic Success</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">An infographic analyzing the key factors that influence student exam performance, based on a comprehensive dataset.</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1 md:col-span-2 bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center text-center">
+                <h2 class="text-2xl font-bold text-[#003f5c] mb-2">Overall Pass Rate</h2>
+                <p id="passRateText" class="text-7xl font-bold text-[#ff6361] mb-4"></p>
+                <div class="w-full max-w-[250px] h-[250px]">
+                    <canvas id="passFailDonutChart"></canvas>
+                </div>
+                <p class="text-gray-600 mt-4 px-4">A high-level view of student outcomes, showing the proportion of students who successfully passed the exam.</p>
+            </div>
+            
+            <div class="md:col-span-2 lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-center text-[#003f5c] mb-2">Comparing Key Metrics: Pass vs. Fail</h2>
+                <p class="text-gray-600 text-center mb-6">This chart directly compares the average metrics for students who passed versus those who failed. The differences highlight the strong influence of study hours, attendance, and prior performance.</p>
+                <div class="chart-container">
+                    <canvas id="passFailComparisonChart"></canvas>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 lg:col-span-3 bg-white rounded-2xl shadow-lg p-6">
+                 <h2 class="text-2xl font-bold text-center text-[#003f5c] mb-2">How Do Study Habits Relate to Scores?</h2>
+                 <p class="text-gray-600 text-center mb-6">These scatter plots explore the relationship between effort and results. A clear positive correlation is visible between study hours, previous exam scores, and current quiz performance.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="studyHoursVsQuizScore"></canvas>
+                    </div>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="prevExamVsQuizScore"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-center text-[#003f5c] mb-2">Distribution of Student Attributes</h2>
+                <p class="text-gray-600 text-center mb-6">These histograms show the frequency distribution of key student metrics, giving us insight into the overall profile of the student population in the dataset.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="studyHoursDistribution"></canvas>
+                    </div>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="iqDistribution"></canvas>
+                    </div>
+                     <div class="chart-container h-80 md:h-96">
+                        <canvas id="quizScoreDistribution"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 bg-white rounded-2xl shadow-lg p-6">
+                 <h2 class="text-2xl font-bold text-center text-[#003f5c] mb-2">A Pathway to Success</h2>
+                 <p class="text-gray-600 text-center mb-8">The data suggests a clear path towards passing the exam. This flow demonstrates how positive inputs like high attendance and dedicated study lead to better performance and ultimately, success.</p>
+                 <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="text-center p-4 bg-blue-100 border-2 border-blue-300 rounded-lg shadow">
+                        <p class="text-4xl mb-2">📚</p>
+                        <h3 class="font-semibold text-blue-800">High Study Hours & Attendance</h3>
+                    </div>
+                    <div class="text-2xl font-bold text-[#58508d] transform md:rotate-0 rotate-90">&rarr;</div>
+                    <div class="text-center p-4 bg-purple-100 border-2 border-purple-300 rounded-lg shadow">
+                        <p class="text-4xl mb-2">🧠</p>
+                        <h3 class="font-semibold text-purple-800">Higher Quiz & Previous Scores</h3>
+                    </div>
+                    <div class="text-2xl font-bold text-[#bc5090] transform md:rotate-0 rotate-90">&rarr;</div>
+                    <div class="text-center p-4 bg-red-100 border-2 border-red-300 rounded-lg shadow">
+                        <p class="text-4xl mb-2">🎯</p>
+                         <h3 class="font-semibold text-red-800">Stronger Correlation with IQ</h3>
+                    </div>
+                    <div class="text-2xl font-bold text-[#ff6361] transform md:rotate-0 rotate-90">&rarr;</div>
+                    <div class="text-center p-4 bg-green-100 border-2 border-green-300 rounded-lg shadow">
+                         <p class="text-4xl mb-2">🏆</p>
+                        <h3 class="font-semibold text-green-800">Higher Chance to Pass Exam</h3>
+                    </div>
+                 </div>
+            </div>
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-300">
+            <p class="text-gray-500">Infographic generated based on the Student Performance Dataset.</p>
+        </footer>
+    </div>
+
+    <script>
+        const csvData = `Hours of Study,Previous Exam %,IQ,Attendance %,Average Quiz Score,Exam Result
+5.2,75,110,95,88,1
+1.1,50,95,60,55,0
+8.3,85,120,100,92,1
+3.4,62,105,80,70,0
+6.1,90,115,98,95,1
+2.2,45,90,50,48,0
+7.5,80,118,90,85,1
+4.6,70,108,85,78,1
+1.5,55,100,65,60,0
+9.0,95,125,100,98,1
+2.5,68,102,75,72,0
+5.5,78,112,92,84,1
+3.5,58,98,70,65,0
+6.5,82,114,96,90,1
+1.2,40,93,45,42,0
+4.9,88,111,94,87,1
+2.8,60,97,68,63,0
+7.8,84,122,99,91,1
+3.0,52,104,72,67,0
+5.8,79,109,93,86,1
+2.1,48,91,55,50,0
+6.8,91,116,97,94,1
+4.1,65,103,82,75,0
+8.0,86,121,99,93,1
+1.8,53,96,62,58,0
+5.9,81,113,91,89,1
+3.8,59,99,71,66,0
+7.1,83,119,95,89,1
+2.3,46,94,58,52,0
+6.2,89,117,96,93,1
+4.0,69,106,84,77,1
+1.7,49,92,52,51,0
+8.5,87,123,98,96,1
+3.2,56,101,69,64,0
+5.3,76,107,89,81,1
+2.7,51,98,64,61,0
+7.0,85,115,97,90,1
+4.3,73,110,88,80,1
+1.4,43,94,51,45,0
+6.6,88,118,99,91,1
+3.6,61,103,78,71,0
+5.1,77,111,93,85,1
+2.9,57,97,66,62,0
+7.4,82,120,95,88,1
+4.5,72,109,86,79,1
+1.6,47,96,54,50,0
+6.9,92,119,98,95,1
+3.9,64,105,81,74,0
+8.1,89,122,99,94,1
+2.4,54,99,63,59,0
+5.6,79,112,91,86,1
+3.7,60,98,70,68,0
+7.2,84,117,96,91,1
+1.9,48,93,55,51,0
+6.3,90,116,97,93,1
+4.2,71,104,83,76,0
+8.4,87,124,99,97,1
+3.1,55,100,67,65,0
+5.7,78,110,90,83,1
+2.6,50,95,61,58,0
+7.3,86,118,94,89,1
+4.4,74,107,87,80,1
+1.3,42,95,48,44,0
+6.7,89,117,98,92,1
+3.3,63,106,79,73,0
+5.4,77,108,90,84,1
+2.0,46,91,53,47,0
+8.6,91,125,100,96,1
+2.7,58,99,68,64,0
+7.6,82,113,94,88,1
+4.8,75,109,88,82,1
+1.0,44,90,50,45,0
+6.4,88,115,96,91,1
+3.9,60,102,75,69,0
+5.8,81,112,92,86,1
+2.3,53,98,65,61,0
+7.9,85,120,98,93,1
+4.0,67,106,82,76,0
+8.2,90,121,99,95,1
+1.9,49,93,56,50,0
+5.5,76,110,91,85,1
+3.1,59,101,72,68,0
+7.7,83,119,97,90,1
+4.5,70,108,85,78,1
+1.4,41,94,49,43,0
+6.8,87,116,95,92,1
+3.5,62,105,77,71,0
+5.9,80,111,93,87,1
+2.5,56,97,67,63,0
+7.4,84,118,96,89,1
+4.3,71,109,86,79,1
+1.6,45,92,52,48,0
+6.9,93,120,99,95,1
+3.8,64,103,80,74,0
+8.1,88,122,100,94,1
+2.4,55,99,65,60,0
+5.6,79,112,91,86,1
+3.2,58,98,69,65,0
+7.2,86,117,95,91,1
+2.0,47,93,58,52,0
+6.3,89,116,97,93,1
+4.2,70,104,83,76,0`;
+
+        function parseCSV(data) {
+            const lines = data.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const values = line.split(',');
+                const entry = {};
+                headers.forEach((header, index) => {
+                    entry[header] = parseFloat(values[index]);
+                });
+                return entry;
+            });
+        }
+
+        const studentData = parseCSV(csvData);
+
+        const passedStudents = studentData.filter(s => s['Exam Result'] === 1);
+        const failedStudents = studentData.filter(s => s['Exam Result'] === 0);
+
+        const passCount = passedStudents.length;
+        const failCount = failedStudents.length;
+        const totalStudents = studentData.length;
+        const passPercentage = ((passCount / totalStudents) * 100).toFixed(1);
+        
+        document.getElementById('passRateText').innerText = `${passPercentage}%`;
+
+        const colors = {
+            main: '#003f5c',
+            purple: '#58508d',
+            pink: '#bc5090',
+            red: '#ff6361',
+            orange: '#ffa600',
+            lightGray: '#d1d5db',
+        };
+
+        const tooltipPlugin = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            }
+                            return label;
+                        }
+                    }
+                },
+                legend: {
+                    labels: {
+                        boxWidth: 15,
+                        padding: 15,
+                        font: {
+                            size: 14
+                        }
+                    }
+                }
+            }
+        };
+        
+        const chartOptions = {
+             maintainAspectRatio: false,
+             responsive: true,
+             ...tooltipPlugin
+        };
+        
+        function getAverage(data, key) {
+            if (data.length === 0) return 0;
+            const sum = data.reduce((acc, curr) => acc + curr[key], 0);
+            return (sum / data.length).toFixed(2);
+        }
+
+        new Chart(document.getElementById('passFailDonutChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Pass', 'Fail'],
+                datasets: [{
+                    data: [passCount, failCount],
+                    backgroundColor: [colors.red, colors.lightGray],
+                    borderColor: '#fff',
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                ...chartOptions,
+                cutout: '70%',
+                plugins: { ...tooltipPlugin.plugins, legend: { display: false } }
+            }
+        });
+        
+        new Chart(document.getElementById('passFailComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Hours of Study', 'Previous Exam %', 'Attendance %', 'Average Quiz Score'],
+                datasets: [
+                    {
+                        label: 'Pass',
+                        data: [
+                            getAverage(passedStudents, 'Hours of Study'),
+                            getAverage(passedStudents, 'Previous Exam %'),
+                            getAverage(passedStudents, 'Attendance %'),
+                            getAverage(passedStudents, 'Average Quiz Score'),
+                        ],
+                        backgroundColor: colors.red,
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Fail',
+                        data: [
+                             getAverage(failedStudents, 'Hours of Study'),
+                            getAverage(failedStudents, 'Previous Exam %'),
+                            getAverage(failedStudents, 'Attendance %'),
+                            getAverage(failedStudents, 'Average Quiz Score'),
+                        ],
+                        backgroundColor: colors.lightGray,
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: { ...chartOptions, scales: { y: { beginAtZero: true, grid: { drawOnChartArea: false }  } } }
+        });
+
+        function createDistributionData(data, key, binSize) {
+            const values = data.map(d => d[key]);
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const bins = {};
+            
+            for (let i = Math.floor(min / binSize) * binSize; i <= max; i += binSize) {
+                const binLabel = `${i} - ${i + binSize -1}`;
+                bins[binLabel] = 0;
+            }
+
+            values.forEach(value => {
+                const binStart = Math.floor(value / binSize) * binSize;
+                const binLabel = `${binStart} - ${binStart + binSize - 1}`;
+                if (bins[binLabel] !== undefined) {
+                    bins[binLabel]++;
+                }
+            });
+            return {
+                labels: Object.keys(bins),
+                data: Object.values(bins)
+            };
+        }
+
+        const studyHoursDist = createDistributionData(studentData, 'Hours of Study', 2);
+        new Chart(document.getElementById('studyHoursDistribution'), {
+            type: 'bar',
+            data: {
+                labels: studyHoursDist.labels,
+                datasets: [{
+                    label: 'Number of Students',
+                    data: studyHoursDist.data,
+                    backgroundColor: colors.purple,
+                    borderRadius: 4
+                }]
+            },
+            options: { ...chartOptions, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Students' } }, x: { title: { display: true, text: 'Hours of Study' } } } }
+        });
+
+        const iqDist = createDistributionData(studentData, 'IQ', 10);
+        new Chart(document.getElementById('iqDistribution'), {
+            type: 'bar',
+            data: {
+                labels: iqDist.labels,
+                datasets: [{
+                    label: 'Number of Students',
+                    data: iqDist.data,
+                    backgroundColor: colors.pink,
+                    borderRadius: 4
+                }]
+            },
+            options: { ...chartOptions, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Students' } }, x: { title: { display: true, text: 'IQ Score' } } } }
+        });
+        
+        const quizScoreDist = createDistributionData(studentData, 'Average Quiz Score', 10);
+        new Chart(document.getElementById('quizScoreDistribution'), {
+            type: 'bar',
+            data: {
+                labels: quizScoreDist.labels,
+                datasets: [{
+                    label: 'Number of Students',
+                    data: quizScoreDist.data,
+                    backgroundColor: colors.orange,
+                    borderRadius: 4
+                }]
+            },
+            options: { ...chartOptions, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Students' } }, x: { title: { display: true, text: 'Avg. Quiz Score' } } } }
+        });
+
+        const scatterDataStudyQuiz = studentData.map(s => ({
+            x: s['Hours of Study'],
+            y: s['Average Quiz Score']
+        }));
+
+        new Chart(document.getElementById('studyHoursVsQuizScore'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Student',
+                    data: scatterDataStudyQuiz,
+                    backgroundColor: colors.red,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: { ...chartOptions, plugins: { legend: { display: false } }, scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: 'Hours of Study' } }, y: { title: { display: true, text: 'Average Quiz Score' } } } }
+        });
+        
+        const scatterDataPrevExamQuiz = studentData.map(s => ({
+            x: s['Previous Exam %'],
+            y: s['Average Quiz Score']
+        }));
+
+        new Chart(document.getElementById('prevExamVsQuizScore'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Student',
+                    data: scatterDataPrevExamQuiz,
+                    backgroundColor: colors.main,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: { ...chartOptions, plugins: { legend: { display: false } }, scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: 'Previous Exam %' } }, y: { title: { display: true, text: 'Average Quiz Score' } } } }
+        });
+
+    </script>
+</body>
+</html>

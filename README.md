@@ -4,6 +4,7 @@ Codes for various machine learning approaches
 2. Logistic Regression (student_results.ipynb)
 3. Neural Networks (binary__classification.ipynb)
 (digit_recognition.ipynb)
+4. Decision Trees (decision_tree.ipynb)
 
 This repository shows cost function, gradient descent, vectorization, normalization, regularization
 All of this is done in raw format without using ML libraries like scikit-learn, etc.
